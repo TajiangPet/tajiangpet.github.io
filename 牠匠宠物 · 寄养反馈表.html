@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>牠匠宠物 · 寄养反馈表</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f0eb; color: #333; padding: 0 0 100px 0; }
+.header { background: linear-gradient(135deg, #2c5f2d 0%, #3a7d44 100%); color: white; padding: 24px 20px 20px; text-align: center; }
+.header h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.header p { font-size: 13px; opacity: 0.85; }
+.form-container { padding: 16px; max-width: 500px; margin: 0 auto; }
+.section { background: white; border-radius: 12px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.section-header { background: #f8f6f3; padding: 12px 16px; font-size: 15px; font-weight: 600; color: #2c5f2d; border-bottom: 1px solid #e8e4df; display: flex; align-items: center; gap: 8px; }
+.section-header .icon { font-size: 18px; }
+.section-body { padding: 4px 0; }
+.field { padding: 12px 16px; border-bottom: 1px solid #f0ece8; }
+.field:last-child { border-bottom: none; }
+.field-label { font-size: 13px; color: #666; margin-bottom: 6px; font-weight: 500; }
+input[type="text"], input[type="time"], input[type="date"], select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 15px; background: #fafafa; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
+input:focus, select:focus, textarea:focus { border-color: #3a7d44; outline: none; background: white; }
+select { background: #fafafa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center; padding-right: 32px; }
+textarea { min-height: 60px; resize: vertical; font-family: inherit; }
+.optional-tag { font-size: 11px; color: #999; margin-left: 6px; font-weight: 400; }
+.quick-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.quick-tag { padding: 6px 12px; border-radius: 16px; font-size: 13px; border: 1.5px solid #ddd; background: white; cursor: pointer; transition: all 0.2s; user-select: none; -webkit-user-select: none; text-align: center; }
+.quick-tag:active { transform: scale(0.95); }
+.quick-tag.selected { background: #e8f5e9; border-color: #3a7d44; color: #2c5f2d; font-weight: 500; }
+.inline-group { display: flex; gap: 8px; }
+.inline-group .field-item { flex: 1; min-width: 0; }
+.inline-group .field-label { font-size: 12px; }
+.submit-area { padding: 20px 16px; max-width: 500px; margin: 0 auto; }
+.btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, #2c5f2d 0%, #3a7d44 100%); color: white; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; }
+.btn-submit:active { opacity: 0.85; }
+.result-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: flex-end; }
+.result-overlay.show { display: flex; }
+.result-panel { background: white; width: 100%; max-height: 85vh; border-radius: 20px 20px 0 0; overflow-y: auto; padding: 24px 20px 40px; }
+.result-panel h3 { font-size: 18px; margin-bottom: 12px; color: #2c5f2d; }
+.result-text { background: #f8f6f3; border-radius: 10px; padding: 16px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-break: break-all; margin-bottom: 16px; border: 1px solid #e8e4df; }
+.btn-copy { width: 100%; padding: 14px; background: #07c160; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+.btn-close { width: 100%; padding: 12px; background: #f0f0f0; color: #666; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; }
+.copy-success { text-align: center; color: #07c160; font-size: 14px; margin-top: 8px; display: none; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🏠 牠匠宠物 · 寄养反馈表</h1>
+  <p>Boarding Daily Report</p>
+</div>
+<div class="form-container">
+
+  <!-- 基本信息 Basic Info -->
+  <div class="section">
+    <div class="section-header"><span class="icon">📋</span> 基本信息 Basic Info</div>
+    <div class="section-body">
+      <div class="field">
+        <div class="field-label">日期 Date</div>
+        <input type="date" id="date" value="">
+      </div>
+      <div class="field">
+        <div style="display:flex;gap:8px">
+          <div style="flex:1">
+            <div class="field-label">填表人 Carer</div>
+            <input type="text" id="carer" placeholder="姓名 Name">
+          </div>
+          <div style="flex:1">
+            <div class="field-label">宠物姓名 Pet Name</div>
+            <input type="text" id="petName" placeholder="狗狗名字">
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">房号 Room No. <span class="optional-tag">选填</span></div>
+        <input type="text" id="roomNo" placeholder="如 A3">
+      </div>
+    </div>
+  </div>
+
+  <!-- 饮食 Diet -->
+  <div class="section">
+    <div class="section-header"><span class="icon">🍖</span> 饮食记录 Diet</div>
+    <div class="section-body">
+      <div class="field">
+        <div class="inline-group">
+          <div class="field-item">
+            <div class="field-label">早餐时间 Breakfast</div>
+            <input type="time" id="breakfastTime" value="09:00">
+          </div>
+          <div class="field-item">
+            <div class="field-label">早餐状况</div>
+            <select id="breakfastCond">
+              <option value="正常速度吃完（5分钟内）|Finished normally (within 5 min)">正常速度吃完</option>
+              <option value="快速吃完（3分钟内）|Finished quickly (within 3 min)">快速吃完</option>
+              <option value="缓慢吃完（10分钟以上）|Slow eater (over 10 min)">缓慢吃完</option>
+              <option value="吃了一半|Ate half">吃了一半</option>
+              <option value="拒食|Refused food">拒食</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="inline-group">
+          <div class="field-item">
+            <div class="field-label">午餐时间 Lunch <span class="optional-tag">选填</span></div>
+            <input type="time" id="lunchTime">
+          </div>
+          <div class="field-item">
+            <div class="field-label">午餐状况 <span class="optional-tag">选填</span></div>
+            <select id="lunchCond">
+              <option value="|">不选 N/A</option>
+              <option value="正常速度吃完（5分钟内）|Finished normally (within 5 min)">正常速度吃完</option>
+              <option value="快速吃完（3分钟内）|Finished quickly (within 3 min)">快速吃完</option>
+              <option value="缓慢吃完（10分钟以上）|Slow eater (over 10 min)">缓慢吃完</option>
+              <option value="吃了一半|Ate half">吃了一半</option>
+              <option value="拒食|Refused food">拒食</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="inline-group">
+          <div class="field-item">
+            <div class="field-label">晚餐时间 Dinner</div>
+            <input type="time" id="dinnerTime" value="17:00">
+          </div>
+          <div class="field-item">
+            <div class="field-label">晚餐状况</div>
+            <select id="dinnerCond">
+              <option value="正常速度吃完（5分钟内）|Finished normally (within 5 min)">正常速度吃完</option>
+              <option value="快速吃完（3分钟内）|Finished quickly (within 3 min)">快速吃完</option>
+              <option value="缓慢吃完（10分钟以上）|Slow eater (over 10 min)">缓慢吃完</option>
+              <option value="吃了一半|Ate half">吃了一半</option>
+              <option value="拒食|Refused food">拒食</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">饮水状况 Water</div>
+        <div class="quick-tags" id="waterTags">
+          <div class="quick-tag selected" data-cn="正常饮水" data-en="Drank normally">正常饮水</div>
+          <div class="quick-tag" data-cn="饮水偏多" data-en="Drank more than usual">饮水偏多</div>
+          <div class="quick-tag" data-cn="饮水偏少" data-en="Drank less than usual">饮水偏少</div>
+          <div class="quick-tag" data-cn="拒饮" data-en="Refused water">拒饮</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 排泄 Excretion -->
+  <div class="section">
+    <div class="section-header"><span class="icon">💩</span> 排泄记录 Excretion</div>
+    <div class="section-body">
+      <div class="field">
+        <div class="field-label">小便 Pee</div>
+        <div class="inline-group">
+          <div class="field-item">
+            <select id="peeCount">
+              <option value="1次|1x">1次</option>
+              <option value="2次|2x">2次</option>
+              <option value="3次|3x" selected>3次</option>
+              <option value="4次|4x">4次</option>
+              <option value="5次|5x">5次</option>
+              <option value="5次以上|5x+">5次以上</option>
+              <option value="未排尿|No urination">未排尿</option>
+            </select>
+          </div>
+          <div class="field-item">
+            <select id="peeCond">
+              <option value="正常|Normal">正常</option>
+              <option value="颜色偏深|Dark color">颜色偏深</option>
+              <option value="颜色偏浅|Light color">颜色偏浅</option>
+              <option value="有血丝|Blood traces">有血丝</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">大便 Poop</div>
+        <div class="inline-group">
+          <div class="field-item">
+            <select id="poopCount">
+              <option value="0次|0x">0次</option>
+              <option value="1次|1x" selected>1次</option>
+              <option value="2次|2x">2次</option>
+              <option value="3次|3x">3次</option>
+              <option value="3次以上|3x+">3次以上</option>
+            </select>
+          </div>
+          <div class="field-item">
+            <select id="poopCond">
+              <option value="成形正常|Well-formed, normal">成形正常</option>
+              <option value="偏软|Soft">偏软</option>
+              <option value="偏硬|Hard">偏硬</option>
+              <option value="稀便|Loose stool">稀便</option>
+              <option value="有血丝|Blood traces">有血丝</option>
+              <option value="有异物|Foreign matter">有异物</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 护理 Grooming & Health -->
+  <div class="section">
+    <div class="section-header"><span class="icon">🩺</span> 护理与体征 Grooming & Health</div>
+    <div class="section-body">
+      <div class="field">
+        <div class="field-label">皮毛护理时间 Fur Care <span class="optional-tag">选填</span></div>
+        <input type="time" id="furTime">
+      </div>
+      <div class="field">
+        <div class="field-label">毛发状况 Coat</div>
+        <div class="quick-tags" id="coatTags">
+          <div class="quick-tag selected" data-cn="正常整洁" data-en="Clean & tidy">正常整洁</div>
+          <div class="quick-tag" data-cn="略毛躁" data-en="Slightly rough">略毛躁</div>
+          <div class="quick-tag" data-cn="需要梳理" data-en="Needs brushing">需要梳理</div>
+          <div class="quick-tag" data-cn="打结" data-en="Matted">打结</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">皮肤状况 Skin</div>
+        <div class="quick-tags" id="skinTags">
+          <div class="quick-tag selected" data-cn="正常无异常" data-en="Normal, no issues">正常无异常</div>
+          <div class="quick-tag" data-cn="局部红点" data-en="Red spots">局部红点</div>
+          <div class="quick-tag" data-cn="局部脱毛" data-en="Hair loss">局部脱毛</div>
+          <div class="quick-tag" data-cn="皮屑偏多" data-en="Excessive dandruff">皮屑偏多</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">皮肤备注 Skin Notes <span class="optional-tag">有异常时填写</span></div>
+        <input type="text" id="skinNote" placeholder="位置和情况 Location & details">
+      </div>
+      <div class="field">
+        <div class="inline-group">
+          <div class="field-item">
+            <div class="field-label">耳朵 Ears</div>
+            <select id="earsCond">
+              <option value="干净无异味|Clean, no odor">干净无异味</option>
+              <option value="略有污垢|Slightly dirty">略有污垢</option>
+              <option value="有异味|Has odor">有异味</option>
+              <option value="有分泌物|Has discharge">有分泌物</option>
+            </select>
+          </div>
+          <div class="field-item">
+            <div class="field-label">眼睛 Eyes</div>
+            <select id="eyesCond">
+              <option value="清澈明亮|Clear & bright">清澈明亮</option>
+              <option value="略有分泌物|Slight discharge">略有分泌物</option>
+              <option value="分泌物较多|Excessive discharge">分泌物较多</option>
+              <option value="发红|Redness">发红</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">趾甲 Nails</div>
+        <div class="quick-tags" id="nailTags">
+          <div class="quick-tag selected" data-cn="正常无需护理" data-en="Good, no care needed">无需护理</div>
+          <div class="quick-tag" data-cn="已修剪" data-en="Trimmed">已修剪</div>
+          <div class="quick-tag" data-cn="需要修剪" data-en="Needs trimming">需要修剪</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 情绪情绪 Mood & Rest -->
+  <div class="section">
+    <div class="section-header"><span class="icon">😊</span> 情绪与休息 Mood & Rest</div>
+    <div class="section-body">
+      <div class="field">
+        <div class="field-label">情绪状况 Mood</div>
+        <div class="quick-tags" id="emotionTags">
+          <div class="quick-tag" data-cn="非常开心活跃" data-en="Very happy & active">非常开心</div>
+          <div class="quick-tag selected" data-cn="稳定放松" data-en="Calm & relaxed">稳定放松</div>
+          <div class="quick-tag" data-cn="略紧张" data-en="Slightly nervous">略紧张</div>
+          <div class="quick-tag" data-cn="焦虑不安" data-en="Anxious">焦虑不安</div>
+          <div class="quick-tag" data-cn="低落" data-en="Low spirits">低落</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">休息状况 Rest</div>
+        <div class="quick-tags" id="restTags">
+          <div class="quick-tag selected" data-cn="正常安稳" data-en="Normal & peaceful">正常安稳</div>
+          <div class="quick-tag" data-cn="睡眠偏少" data-en="Slept less">睡眠偏少</div>
+          <div class="quick-tag" data-cn="难以入睡" data-en="Hard to fall asleep">难以入睡</div>
+          <div class="quick-tag" data-cn="频繁醒来" data-en="Woke up frequently">频繁醒来</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 补充 Notes -->
+  <div class="section">
+    <div class="section-header"><span class="icon">📝</span> 补充说明 Notes</div>
+    <div class="section-body">
+      <div class="field">
+        <div class="field-label">今日特别记录 <span class="optional-tag">趣事、异常等</span></div>
+        <textarea id="moreDesc" placeholder="趣事、异常表现、需注意的事项..."></textarea>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="submit-area">
+  <button class="btn-submit" onclick="generateReport()">生成反馈报告 Generate Report</button>
+</div>
+
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-panel">
+    <h3>📋 寄养反馈报告 Boarding Report</h3>
+    <div class="result-text" id="resultText"></div>
+    <button class="btn-copy" onclick="copyText()">📋 复制全文 Copy All</button>
+    <div class="copy-success" id="copySuccess">✅ 已复制！可粘贴到微信发送</div>
+    <button class="btn-close" onclick="closeResult()">返回修改 Go Back</button>
+  </div>
+</div>
+
+<script>
+document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+document.querySelectorAll('.quick-tags').forEach(group => {
+  group.querySelectorAll('.quick-tag').forEach(tag => {
+    tag.addEventListener('click', () => {
+      group.querySelectorAll('.quick-tag').forEach(t => t.classList.remove('selected'));
+      tag.classList.add('selected');
+    });
+  });
+});
+
+// Get bilingual value from quick tags
+function getTagBilingual(groupId) {
+  const sel = document.querySelector('#' + groupId + ' .quick-tag.selected');
+  if (!sel) return { cn: '', en: '' };
+  return { cn: sel.dataset.cn, en: sel.dataset.en };
+}
+
+// Parse select bilingual value (format: "中文|English")
+function getSelectBilingual(id) {
+  const val = document.getElementById(id).value;
+  if (!val || val === '|') return { cn: '', en: '' };
+  const parts = val.split('|');
+  return { cn: parts[0] || '', en: parts[1] || '' };
+}
+
+function generateReport() {
+  const petName = document.getElementById('petName').value || '宠物';
+  const date = document.getElementById('date').value || '';
+  const carer = document.getElementById('carer').value || '';
+  const roomNo = document.getElementById('roomNo').value;
+  
+  const bTime = document.getElementById('breakfastTime').value;
+  const bCond = getSelectBilingual('breakfastCond');
+  const lTime = document.getElementById('lunchTime').value;
+  const lCond = getSelectBilingual('lunchCond');
+  const dTime = document.getElementById('dinnerTime').value;
+  const dCond = getSelectBilingual('dinnerCond');
+  const water = getTagBilingual('waterTags');
+  
+  const peeC = getSelectBilingual('peeCount');
+  const peeS = getSelectBilingual('peeCond');
+  const poopC = getSelectBilingual('poopCount');
+  const poopS = getSelectBilingual('poopCond');
+  
+  const furTime = document.getElementById('furTime').value;
+  const coat = getTagBilingual('coatTags');
+  const skin = getTagBilingual('skinTags');
+  const skinNote = document.getElementById('skinNote').value;
+  const ears = getSelectBilingual('earsCond');
+  const eyes = getSelectBilingual('eyesCond');
+  const nails = getTagBilingual('nailTags');
+  
+  const emotion = getTagBilingual('emotionTags');
+  const rest = getTagBilingual('restTags');
+  const more = document.getElementById('moreDesc').value;
+
+  // Build report
+  let report = `🏠 ${petName} 寄养反馈表\n`;
+  report += `Boarding Daily Report\n`;
+  report += `📅 ${date}`;
+  if (carer) report += ` | 填表人 Carer：${carer}`;
+  if (roomNo) report += ` | 房号 Room：${roomNo}`;
+  report += '\n\n';
+  
+  // 饮食
+  report += `🍖 饮食记录 Diet\n`;
+  if (bTime) report += `  早餐 Breakfast：${bTime} ${bCond.cn} / ${bCond.en}\n`;
+  if (lTime && lCond.cn) report += `  午餐 Lunch：${lTime} ${lCond.cn} / ${lCond.en}\n`;
+  if (dTime) report += `  晚餐 Dinner：${dTime} ${dCond.cn} / ${dCond.en}\n`;
+  report += `  饮水 Water：${water.cn} / ${water.en}\n\n`;
+  
+  // 排泄
+  report += `💩 排泄记录 Excretion\n`;
+  report += `  小便 Pee：${peeC.cn}，${peeS.cn} / ${peeC.en}, ${peeS.en}\n`;
+  report += `  大便 Poop：${poopC.cn}，${poopS.cn} / ${poopC.en}, ${poopS.en}\n\n`;
+  
+  // 护理
+  report += `🩺 护理与体征 Grooming & Health\n`;
+  if (furTime) report += `  皮毛护理 Fur Care：${furTime}\n`;
+  report += `  毛发 Coat：${coat.cn} / ${coat.en}\n`;
+  let skinLine = `  皮肤 Skin：${skin.cn} / ${skin.en}`;
+  if (skinNote) skinLine += `（${skinNote}）`;
+  report += skinLine + '\n';
+  report += `  耳朵 Ears：${ears.cn} / ${ears.en}\n`;
+  report += `  眼睛 Eyes：${eyes.cn} / ${eyes.en}\n`;
+  report += `  趾甲 Nails：${nails.cn} / ${nails.en}\n\n`;
+  
+  // 情绪
+  report += `😊 情绪与休息 Mood & Rest\n`;
+  report += `  情绪 Mood：${emotion.cn} / ${emotion.en}\n`;
+  report += `  休息 Rest：${rest.cn} / ${rest.en}\n\n`;
+  
+  // 补充
+  if (more) {
+    report += `📝 补充说明 Notes\n  ${more}\n\n`;
+  }
+  
+  report += `—— 牠匠宠物（行为学院）`;
+  if (carer) report += `\n填表人 Carer：${carer}`;
+
+  document.getElementById('resultText').textContent = report;
+  document.getElementById('resultOverlay').classList.add('show');
+  document.getElementById('copySuccess').style.display = 'none';
+}
+
+function copyText() {
+  const text = document.getElementById('resultText').textContent;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      document.getElementById('copySuccess').style.display = 'block';
+    }).catch(() => { fallbackCopy(text); });
+  } else { fallbackCopy(text); }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); document.getElementById('copySuccess').style.display = 'block'; }
+  catch(e) { alert('复制失败，请长按文本手动复制'); }
+  document.body.removeChild(ta);
+}
+
+function closeResult() {
+  document.getElementById('resultOverlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
